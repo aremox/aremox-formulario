@@ -34,6 +34,7 @@ UIkit.upload('.js-upload', {
 
         url: '',
         multiple: true,
+        concurrent: 5,
 
         beforeSend: function () {
           //  console.log('beforeSend', arguments);

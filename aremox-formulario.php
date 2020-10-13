@@ -146,9 +146,10 @@ function aremox_formulario_shortcode() {
          
 
     if(isset($_FILES['files'])){
-
+        print_r($_FILES['files']);
         for($i=0;$i<count($_FILES['files']['name']);$i++){
             foreach($_FILES['files'] as $v=>$file) {
+                print_r( $v );
                 $errors = array();
                 $file_name = strtolower(sanitize_text_field($_FILES['files']['name'][$i]));
                 $file_size = $_FILES['files']['size'][$i];
@@ -160,8 +161,6 @@ function aremox_formulario_shortcode() {
  
                 if(in_array($file_ext,$extensions) === true){
                     move_uploaded_file($file_tmp,$aremox_dirname.$file_name);
-                    echo $aremox_dirname.$file_name;
-                    print_r(scandir($aremox_dirname));
                 }
             }
         }
