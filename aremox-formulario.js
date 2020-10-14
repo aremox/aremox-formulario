@@ -7,7 +7,7 @@
     }
 });*/
 
-document.getElementById('fichero').addEventListener('change', getFile);
+//document.getElementById('fichero').addEventListener('change', getFile);
 
 function getFile(event) {
     var i;
@@ -32,7 +32,7 @@ var bar = document.getElementById('js-progressbar');
 
 UIkit.upload('.js-upload', {
 
-        url: '',
+        url: '/wp-json/aremox/v1/imagen/',
         multiple: true,
         concurrent: 5,
 
@@ -80,7 +80,26 @@ UIkit.upload('.js-upload', {
         completeAll: function () {
             console.log('completeAll', arguments);
             bar.setAttribute('hidden', 'hidden');
-          //  alert('Upload Completed');
+            uploaded_filename = JSON.parse(arguments[0].response);
+            console.log(uploaded_filename);
+            var i;
+   /* jQuery('#lista_ficheros').empty();*/
+for (i = 0; i < uploaded_filename.length; i++) {
+
+    var files = uploaded_filename
+        , file = files[i];
+
+        var lista = document.getElementById('lista_ficheros');
+        var item = document.createElement('li');
+        lista.appendChild(item);
+        item.innerHTML=item.innerHTML + file.name;
+
+    console.log('Name of the file', file.name);
+    console.log('Size of the file', file.size);
+    console.log('Id of the file', file.id);
+    console.log('FNC of the file', file.fnc);
+
+}
         }
 
     });

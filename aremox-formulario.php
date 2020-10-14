@@ -141,30 +141,6 @@ function aremox_formulario_options_page() {
 function aremox_formulario_shortcode() {
 
     $insertado = false;
-    $upload_dir   = wp_upload_dir();
-    $aremox_dirname = $upload_dir['basedir'].'/aremox-formulario/tmp/';
-         
-
-    if(isset($_FILES['files'])){
-        print_r($_FILES['files']);
-        for($i=0;$i<count($_FILES['files']['name']);$i++){
-            foreach($_FILES['files'] as $v=>$file) {
-                print_r( $v );
-                $errors = array();
-                $file_name = strtolower(sanitize_text_field($_FILES['files']['name'][$i]));
-                $file_size = $_FILES['files']['size'][$i];
-                $file_tmp = $_FILES['files']['tmp_name'][$i];
-                $file_type = $_FILES['files']['type'][$i];
-                $file_ext = strtolower(end(explode('.',$_FILES['files']['name'][$i])));
- 
-                $extensions = array("jpeg","jpg","png","docx","doc","pdf");
- 
-                if(in_array($file_ext,$extensions) === true){
-                    move_uploaded_file($file_tmp,$aremox_dirname.$file_name);
-                }
-            }
-        }
-    }
   
     global $wpdb; // Este objeto global permite acceder a la base de datos de WP
     // Si viene del formulario  graba en la base de datos
@@ -258,6 +234,84 @@ function Kfp_Obtener_IP_usuario()
             }
         }
     }
+}
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'aremox/v1', '/imagen',
+		array(
+            array(
+			'methods'       => 'GET', 
+            'callback'      => 'convuls_customquery'
+            ),
+            array(
+                'methods'   => 'POST', 
+                'callback'  => 'subir_imagen'
+            ),
+            array(
+                'methods'   => 'DELETE', 
+                'callback'  => 'borrar_imagen'
+               )
+		)
+    );
+});
+function subir_imagen(){
+    $upload_dir   = wp_upload_dir();
+    $aremox_dirname = $upload_dir['basedir'].'/aremox-formulario/tmp/';
+    $data = array(); 
+
+    if(isset($_FILES['files'])){
+        for($i=0;$i<count($_FILES['files']['name']);$i++){
+                $errors     = array();
+                $file_name  = strtolower(sanitize_text_field($_FILES['files']['name'][$i]));
+                $file_size  = $_FILES['files']['size'][$i];
+                $file_tmp   = $_FILES['files']['tmp_name'][$i];
+                $file_type  = $_FILES['files']['type'][$i];
+                $file_ext   = explode('.',$_FILES['files']['name'][$i]);
+                $file_ext   = strtolower(end($file_ext));
+                $id     = (string)intval( rand(1,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) );
+                
+ 
+                $extensions = array("jpeg","jpg","png","docx","doc","pdf");
+ 
+                if(in_array($file_ext,$extensions) === true){
+                    move_uploaded_file($file_tmp,$aremox_dirname.$id.".".$file_ext);
+                    $data[$i]['name']   = $file_name;
+                    $data[$i]['size']   = $file_size;
+                    $data[$i]['id']     = $id;
+                    $data[$i]['fnc']    = $id.".".$file_ext;
+                }
+            
+        }
+    }
+return $data;
+}
+
+function borrar_imagen(WP_REST_Request $request){
+//print_r($request->get_params());
+$fichero = sanitize_text_field($request->get_param('id'));
+$upload_dir   = wp_upload_dir();
+    $aremox_dirname = $upload_dir['basedir'].'/aremox-formulario/tmp/';
+unlink($aremox_dirname.$fichero);
+    return $request->get_params();
+}
+
+
+
+function convuls_customquery(){
+	global $plugin_url;
+      global $options;
+      global $wpdb;
+
+
+      $tabla_aremox_formulario = $wpdb->prefix . 'aremox_formulario';
+
+
+    
+    
+    $aremox_formulario = $wpdb->get_results("SELECT * FROM $tabla_aremox_formulario");
+
+		// Return the data
+		return $aremox_formulario;
+	
 }
 
   
