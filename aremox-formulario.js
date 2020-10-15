@@ -1,16 +1,13 @@
 var ficheros = [];
 
-/*jQuery( "#tipo" ).change(function() {
+jQuery( "#tipo" ).change(function() {
     var tipo = document.getElementById('tipo');
     if (tipo.value == 'Nueva_incidencia'){
         document.getElementById('subirFichero').style.display='block';
     }else{
         document.getElementById('subirFichero').style.display='none';
     }
-});*/
-
-//document.getElementById('fichero').addEventListener('change', getFile);
-
+});
 
 
 function getFile(event) {
