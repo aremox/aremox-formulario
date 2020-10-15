@@ -89,10 +89,22 @@ for (i = 0; i < uploaded_filename.length; i++) {
     var files = uploaded_filename
         , file = files[i];
 
+        icono = document.createElement('div');
+        icono.setAttribute("id", file.fnc);
+        icono.setAttribute("class", "uk-padding-large uk-padding-remove-vertical uk-text-justify");
+        icono.setAttribute("uk-icon", "icon: close");
+//        icono.style.textAlign="right";
+
+        var item = document.createElement('li');       
+
         var lista = document.getElementById('lista_ficheros');
-        var item = document.createElement('li');
         lista.appendChild(item);
-        item.innerHTML=item.innerHTML + file.name;
+
+        item.innerHTML=item.innerHTML  + file.name;
+        item.setAttribute("class", "uk-text-justify");
+        item.appendChild(icono);
+        
+
 
     console.log('Name of the file', file.name);
     console.log('Size of the file', file.size);

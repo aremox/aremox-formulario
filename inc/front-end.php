@@ -23,21 +23,30 @@ class="cuestionario" enctype="multipart/form-data">
         </div>
         <div class="uk-margin">
             <textarea class="uk-textarea uk-button-default" id="texto" minlength="9" name="texto" rows="5" cols="50" placeholder="Escriba aquí su comentario o mensaje ..."></textarea>
-        </div>    
+        </div>  
 
-        <div class="js-upload uk-placeholder uk-text-center uk-background-primary uk-text-secondary" id="subirFichero"  style="display:block;">
-            <span uk-icon="icon: cloud-upload"></span>
-            <span class="uk-text-middle">Arrastra aquí un fichero o</span>
-            <div uk-form-custom>
-                <input type="file" id="fichero" name="file" multiple>
-                <span class="uk-link">selecciona uno</span>
+        <div uk-grid>  
+            <div class="uk-width-2-3">
+                <div class="js-upload uk-placeholder uk-text-center uk-background-primary uk-text-secondary" id="subirFichero"  style="display:block;">
+                    <span uk-icon="icon: cloud-upload"></span>
+                    <span class="uk-text-middle">Arrastra aquí un fichero o</span>
+                    <div uk-form-custom>
+                        <input type="file" id="fichero" name="file" multiple>
+                        <span class="uk-link">selecciona uno</span>
+                    </div>
+                </div>
+            
+            </div>
+
+            <div class="uk-width-1-3">
+
+                <ul class="uk-list uk-list-square uk-list-secondary" id="lista_ficheros">
+                </ul>
+
             </div>
         </div>
-
         <progress id="js-progressbar" class="uk-progress" value="0" max="100" hidden></progress>
-        
-        <ul class="uk-list" id="lista_ficheros">
-        </ul>
+
 
         <div class="uk-margin">
             <label for="aceptacion">La información facilitada se tratará 
