@@ -26,7 +26,7 @@ class="cuestionario" enctype="multipart/form-data">
         </div>  
 
         <div uk-grid>  
-            <div class="uk-width-2-3">
+            <div id="upload" class="uk-width-3-3">
                 <div class="js-upload uk-placeholder uk-text-center uk-background-primary uk-text-secondary" id="subirFichero"  style="display:block;">
                     <span uk-icon="icon: cloud-upload"></span>
                     <span class="uk-text-middle">Arrastra aquí un fichero o</span>
@@ -38,11 +38,7 @@ class="cuestionario" enctype="multipart/form-data">
             
             </div>
 
-            <div class="uk-width-1-3">
-
-                <ul class="uk-list uk-list-square uk-list-secondary" id="lista_ficheros">
-                </ul>
-
+            <div class="uk-width-1-3 " id="lista_ficheros" uk-grid>
             </div>
         </div>
         <progress id="js-progressbar" class="uk-progress" value="0" max="100" hidden></progress>

@@ -78,10 +78,9 @@ UIkit.upload('.js-upload', {
         },
 
         completeAll: function () {
-            console.log('completeAll', arguments);
             bar.setAttribute('hidden', 'hidden');
+            document.getElementById("upload").className = "uk-width-2-3";
             uploaded_filename = JSON.parse(arguments[0].response);
-            console.log(uploaded_filename);
             var i;
    /* jQuery('#lista_ficheros').empty();*/
 for (i = 0; i < uploaded_filename.length; i++) {
@@ -89,20 +88,30 @@ for (i = 0; i < uploaded_filename.length; i++) {
     var files = uploaded_filename
         , file = files[i];
 
-        icono = document.createElement('div');
-        icono.setAttribute("id", file.fnc);
-        icono.setAttribute("class", "uk-padding-large uk-padding-remove-vertical uk-text-justify");
-        icono.setAttribute("uk-icon", "icon: close");
-//        icono.style.textAlign="right";
+        var spinner = document.createElement('div');
+        spinner.setAttribute("id", "spinner" + file.fnc);  
+        spinner.setAttribute("class","borrar-elemento uk-button-link uk-width-1-2 uk-margin-remove-vertical");
+        spinner.innerHTML=spinner.innerHTML  + '<div uk-spinner="ratio: 0.5"></div>';
 
-        var item = document.createElement('li');       
+        spinner.style.display='none'
+
+        var icono = document.createElement('a');
+        icono.setAttribute("id", file.fnc);
+        icono.setAttribute("class","borrar-elemento uk-button-link uk-width-1-2 uk-margin-remove-vertical");
+     //   icono.setAttribute("class", "uk-padding-large uk-padding-remove-vertical uk-text-justify");
+        icono.setAttribute("uk-icon", "icon: trash");
+//        icono.style.textAlign="right";
+        icono.addEventListener("click", borrarHttp, false);
+
+        var item = document.createElement('div'); 
+        item.setAttribute("id", "name" + file.fnc);      
+        item.setAttribute("class", "uk-text-left uk-width-1-2 uk-margin-remove-vertical");
 
         var lista = document.getElementById('lista_ficheros');
         lista.appendChild(item);
-
         item.innerHTML=item.innerHTML  + file.name;
-        item.setAttribute("class", "uk-text-justify");
-        item.appendChild(icono);
+        lista.appendChild(icono);
+        lista.appendChild(spinner);
         
 
 
@@ -115,3 +124,32 @@ for (i = 0; i < uploaded_filename.length; i++) {
         }
 
     });
+
+function borrar(id){
+    console.log(id);
+    console.log(this.id);
+    var icono = document.getElementById(id);
+    icono.parentNode.removeChild(icono);
+    var nombre = document.getElementById("name"+id);
+    nombre.parentNode.removeChild(nombre);
+    var nombre = document.getElementById("spinner"+id);
+    nombre.parentNode.removeChild(nombre);
+}
+
+function borrarHttp(event){
+    id = this.id;
+    document.getElementById('spinner'+id).style.display='block';
+    document.getElementById(id).style.display='none'
+    const url = '/wp-json/aremox/v1/imagen?id='+id;
+    const http = new XMLHttpRequest()
+
+    http.open("DELETE", url)
+    http.onreadystatechange = function(id){
+
+    if(this.readyState == 4 && this.status == 200){
+        var resultado = JSON.parse(this.responseText)
+        borrar(resultado.id);
+    }
+}
+http.send()
+}
