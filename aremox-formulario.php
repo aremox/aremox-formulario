@@ -153,9 +153,6 @@ function aremox_formulario_shortcode() {
         AND $_POST['aceptacion'] == '1'
         AND wp_verify_nonce($_POST['aremox_formulario_nonce'], 'grabar_aremox_formulario')
     ) {
-        var_dump($_POST);
-        echo "<br>";
-        var_dump($_FILES);
         $tabla_aremox_formulario = $wpdb->prefix . 'aremox_formulario'; 
         $nombre = sanitize_text_field($_POST['nombre']);
         $correo = sanitize_text_field($_POST['correo']);
@@ -163,6 +160,7 @@ function aremox_formulario_shortcode() {
         $tipo = sanitize_text_field($_POST['tipo']);
         $texto = sanitize_text_field($_POST['texto']);
         $aceptacion = (int)$_POST['aceptacion'];
+        $ficheros = sanitize_text_field($_POST['ficheros']);
         $ip = Kfp_Obtener_IP_usuario();
         $created_at = date('Y-m-d H:i:s');
         $wpdb->insert(
@@ -173,19 +171,24 @@ function aremox_formulario_shortcode() {
                 'telefono' => $telefono,
                 'tipo' => $tipo,
                 'texto' => $texto,
+                'ficheros' => $ficheros,
                 'aceptacion' => $aceptacion,
                 'ip' => $ip,
                 'created_at' => $created_at,
             )
         );
-      
-        $insertado = true;
+        $id = $wpdb->insert_id;
+        $insertado = 0;
+        if($id > 0){
+            $insertado = moverFichero($id, $ficheros);
+        }
+        
         
     }
 
         ob_start();
 
-        if($insertado == true){
+        if($insertado > 0){
             require( 'inc/respuesta-front-end.php' );
         }else{
             require( 'inc/front-end.php' );
@@ -314,4 +317,29 @@ function convuls_customquery(){
 	
 }
 
-  
+function moverFichero($id, $nombre_ficheros){
+    $upload_dir   = wp_upload_dir();
+    $aremox_dirtmp = $upload_dir['basedir'].'/aremox-formulario/tmp/';
+    $aremox_dirname = $upload_dir['basedir'].'/aremox-formulario/'.$id.'/';
+    $resultado = 1;
+
+    if ( ! file_exists( $aremox_dirname ) ) {
+         wp_mkdir_p( $aremox_dirname );
+    }
+    $nombre_fichero   = explode(',',$nombre_ficheros);
+    
+
+    for($i=0;$i<count($nombre_fichero);$i++){
+        
+        if (file_exists($aremox_dirtmp.$nombre_fichero[$i])) {
+            print_r($aremox_dirtmp.$nombre_fichero[$i]);            
+            if (copy($aremox_dirtmp.$nombre_fichero[$i], $aremox_dirname.$nombre_fichero[$i])) {
+                unlink($aremox_dirtmp.$nombre_fichero[$i]);
+            } else {
+                $resultado = 0;
+            }
+        } else { $resultado = 0;}
+    }
+
+    return 1;
+}

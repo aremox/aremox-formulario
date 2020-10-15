@@ -25,7 +25,7 @@ class="cuestionario" enctype="multipart/form-data">
             <textarea class="uk-textarea uk-button-default" id="texto" minlength="9" name="texto" rows="5" cols="50" placeholder="Escriba aquí su comentario o mensaje ..."></textarea>
         </div>  
 
-        <div uk-grid>  
+        <div uk-grid calss="uk-margin-remove-vertical uk-padding-remove-vertical">  
             <div id="upload" class="uk-width-3-3">
                 <div class="js-upload uk-placeholder uk-text-center uk-background-primary uk-text-secondary" id="subirFichero"  style="display:block;">
                     <span uk-icon="icon: cloud-upload"></span>
@@ -43,6 +43,7 @@ class="cuestionario" enctype="multipart/form-data">
         </div>
         <progress id="js-progressbar" class="uk-progress" value="0" max="100" hidden></progress>
 
+        <input id="ficheros" name="ficheros" type="hidden" value="[]">
 
         <div class="uk-margin">
             <label for="aceptacion">La información facilitada se tratará 

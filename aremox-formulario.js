@@ -1,3 +1,5 @@
+var ficheros = [];
+
 /*jQuery( "#tipo" ).change(function() {
     var tipo = document.getElementById('tipo');
     if (tipo.value == 'Nueva_incidencia'){
@@ -8,6 +10,8 @@
 });*/
 
 //document.getElementById('fichero').addEventListener('change', getFile);
+
+
 
 function getFile(event) {
     var i;
@@ -82,6 +86,8 @@ UIkit.upload('.js-upload', {
             document.getElementById("upload").className = "uk-width-2-3";
             uploaded_filename = JSON.parse(arguments[0].response);
             var i;
+            //ficheros.push(document.getElementById("ficheros").value);
+
    /* jQuery('#lista_ficheros').empty();*/
 for (i = 0; i < uploaded_filename.length; i++) {
 
@@ -112,6 +118,9 @@ for (i = 0; i < uploaded_filename.length; i++) {
         item.innerHTML=item.innerHTML  + file.name;
         lista.appendChild(icono);
         lista.appendChild(spinner);
+
+
+        ficheros.push(file.fnc);
         
 
 
@@ -121,6 +130,9 @@ for (i = 0; i < uploaded_filename.length; i++) {
     console.log('FNC of the file', file.fnc);
 
 }
+
+document.getElementById("ficheros").value = ficheros;
+console.log(ficheros);
         }
 
     });
@@ -128,12 +140,21 @@ for (i = 0; i < uploaded_filename.length; i++) {
 function borrar(id){
     console.log(id);
     console.log(this.id);
+
+    removeItem(ficheros,id);
+    document.getElementById("ficheros").value = ficheros;
+    console.log(ficheros);
+    
     var icono = document.getElementById(id);
     icono.parentNode.removeChild(icono);
     var nombre = document.getElementById("name"+id);
     nombre.parentNode.removeChild(nombre);
     var nombre = document.getElementById("spinner"+id);
     nombre.parentNode.removeChild(nombre);
+
+    if(ficheros.length < 1){
+        document.getElementById("upload").className = "uk-width-3-3";
+    }
 }
 
 function borrarHttp(event){
@@ -153,3 +174,15 @@ function borrarHttp(event){
 }
 http.send()
 }
+
+function removeItem(arr, value) {
+    var i = 0;
+    while (i < arr.length) {
+      if (arr[i] === value) {
+        arr.splice(i, 1);
+      } else {
+        ++i;
+      }
+    }
+    return arr;
+  }
