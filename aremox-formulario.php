@@ -132,7 +132,7 @@ function aremox_formulario_options_page() {
 
     
     
-    $aremox_formulario = $wpdb->get_results("SELECT * FROM $tabla_aremox_formulario");
+    $aremox_formulario = $wpdb->get_results("SELECT * FROM $tabla_aremox_formulario ORDER BY created_at DESC");
 
       require( 'inc/options-page-wrapper.php' );
     
@@ -179,6 +179,7 @@ function aremox_formulario_shortcode() {
         );
         $id = $wpdb->insert_id;
         $insertado = 0;
+        envioMail($tipo,$correo,$telefono, $texto,$ficheros, $id );
         if($id > 0){
             $insertado = moverFichero($id, $ficheros);
         }
@@ -342,4 +343,16 @@ function moverFichero($id, $nombre_ficheros){
     }
 
     return 1;
+}
+
+function envioMail($tipo,$correo,$telefono, $texto,$ficheros, $id){
+    $aremox_dirname = $upload_dir['basedir'].'/aremox-formulario/'.$id.'/';
+    $nombre_fichero   = explode(',',$nombre_ficheros);
+    for($i=0;$i<count($nombre_fichero);$i++){
+        $attachments[] = "$aremox_dirname.$nombre_fichero[$i] ";
+    }
+    $message = "Correo: $correo <br> Telefono: $telefono <br> Mensaje: <br> $texto";
+    $headers[]= "From: Ayuntamiento de El Bohodón <arenasmorante@gmail.com>";
+
+    wp_mail( "arenasmorante@gmail.com", $subject, $message, $headers, $attachments );
 }

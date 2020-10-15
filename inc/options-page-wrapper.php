@@ -1,7 +1,7 @@
 <div class="wrap">
 
 	<div id="icon-options-general" class="icon32"></div>
-	<h1><?php esc_attr_e( 'Consulta de formulaarios enviados', 'WpAdminStyle' ); ?></h1>
+	<h1><?php esc_attr_e( 'Consulta de formularios enviados', 'WpAdminStyle' ); ?></h1>
 
 	<div id="poststuff">
 
@@ -18,21 +18,28 @@
 
 						<div class="inside">
                         <table class="wp-list-table widefat fixed striped"><thead><tr><th>Nombre</th><th>Correo</th>
-                                    <th>Teléfono</th><th>Tipo</th><th>Texto</th>
+                                    <th>Teléfono</th><th>Tipo</th><th>Texto</th><th>Adjuntos</th>
                                     <th>created_at</th></tr></thead>
                                     <tbody id="the-list">
 							<?php foreach ( $aremox_formulario as $registro ) {
+									$id = (int)$registro->id;
                                     $nombre = esc_textarea($registro->nombre);
 									$correo = esc_textarea($registro->correo);
 									$telefono = (int)$registro->telefono;
 									$tipo = esc_textarea($registro->tipo);
 									$texto = esc_textarea($registro->texto);
+									$ficheros = explode(',',esc_textarea($registro->ficheros));
 									$created_at = esc_textarea($registro->created_at);
 
                                     echo "<tr>
                                         <td>$nombre</td>
                                         <td>$correo</td><td>$telefono</td><td>$tipo</td>
-                                        <td>$texto</td><td>$created_at</td>
+										<td>$texto</td><td><ul>";
+									foreach ( $ficheros as $i => $fichero ) {
+										$indice = $i +1;
+										echo "<li><a href='\\wp-content\\uploads\\aremox-formulario\\$id\\$fichero' download='$fichero'>Fichero $indice</li>";
+									}
+									echo "</ul></td><td>$created_at</td>
                                         </tr>";
                             }
                             ?>
