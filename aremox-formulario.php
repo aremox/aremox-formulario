@@ -15,6 +15,7 @@
  */
 
 $plugin_url = WP_PLUGIN_URL . '/aremox-formulario';
+$plugin_dir = WP_PLUGIN_DIR . '/aremox-formulario';
 $options = array();
 
 
@@ -30,11 +31,18 @@ function aremox_formulario_init()
 {
     $current_user = wp_get_current_user();
     $upload_dir   = wp_upload_dir();
+    $plugin_dir = WP_PLUGIN_DIR . '/aremox-formulario';
  
 if (  ! empty( $upload_dir['basedir'] ) ) {
-    $aremox_dirname = $upload_dir['basedir'].'/aremox-formulario/tmp';
+    $aremox_dirname = $upload_dir['basedir'].'/aremox-formulario/tmp/';
         if ( ! file_exists( $aremox_dirname ) ) {
         wp_mkdir_p( $aremox_dirname );
+        if (!@copy($plugin_dir."/seguridad/.htaccess", $aremox_dirname.".htaccess")) {
+            $errors= error_get_last();
+            echo "COPY ERROR: ".$errors['type'];
+            echo "<br />\n".$errors['message'];
+            echo "Error al copiar .htaccess...\n";
+        }
     }
 }
   
@@ -84,7 +92,7 @@ function aremox_formulario_disable() {
 
     $aremox_dirname = $upload_dir['basedir'].'/aremox-formulario';
         if ( file_exists( $aremox_dirname ) ) {
-        rmdir( $aremox_dirname );
+            recurseRmdir( $aremox_dirname );
     }
 }
 
@@ -121,7 +129,9 @@ function aremox_formulario_options_page() {
     if( !current_user_can( 'manage_options' ) ) {
         wp_die( 'You do not have sufficient permissions to access this page.' );
       }
-    
+      if(isset($_POST['fichero'])){
+        descargarImagen($_POST['id'], $_POST['fichero']);
+    } 
       global $plugin_url;
       global $options;
       global $wpdb;
@@ -145,6 +155,7 @@ function aremox_formulario_shortcode() {
     global $wpdb; // Este objeto global permite acceder a la base de datos de WP
     // Si viene del formulario  graba en la base de datos
     // Cuidado con el último igual de la condición del if que es doble
+    if (isset($_POST['nombre'])) {
     if ($_POST['nombre'] != ''
         AND is_email($_POST['correo'])
         AND strlen ($_POST['telefono']) == '9'
@@ -185,7 +196,7 @@ function aremox_formulario_shortcode() {
         }
         
         
-    }
+    }}
 
         ob_start();
 
@@ -244,7 +255,7 @@ add_action( 'rest_api_init', function () {
 		array(
             array(
 			'methods'       => 'GET', 
-            'callback'      => 'convuls_customquery'
+            'callback'      => 'montrarImagen'
             ),
             array(
                 'methods'   => 'POST', 
@@ -319,6 +330,8 @@ function convuls_customquery(){
 }
 
 function moverFichero($id, $nombre_ficheros){
+    $plugin_dir = WP_PLUGIN_DIR . '/aremox-formulario';
+
     $upload_dir   = wp_upload_dir();
     $aremox_dirtmp = $upload_dir['basedir'].'/aremox-formulario/tmp/';
     $aremox_dirname = $upload_dir['basedir'].'/aremox-formulario/'.$id.'/';
@@ -326,6 +339,13 @@ function moverFichero($id, $nombre_ficheros){
 
     if ( ! file_exists( $aremox_dirname ) ) {
          wp_mkdir_p( $aremox_dirname );
+
+         if (!@copy($plugin_dir."/seguridad/.htaccess", $aremox_dirname.".htaccess")) {
+            $errors= error_get_last();
+            echo "COPY ERROR: ".$errors['type'];
+            echo "<br />\n".$errors['message'];
+            echo "Error al copiar .htaccess...\n";
+        }
     }
     $nombre_fichero   = explode(',',$nombre_ficheros);
     
@@ -333,7 +353,6 @@ function moverFichero($id, $nombre_ficheros){
     for($i=0;$i<count($nombre_fichero);$i++){
         
         if (file_exists($aremox_dirtmp.$nombre_fichero[$i])) {
-            print_r($aremox_dirtmp.$nombre_fichero[$i]);            
             if (copy($aremox_dirtmp.$nombre_fichero[$i], $aremox_dirname.$nombre_fichero[$i])) {
                 unlink($aremox_dirtmp.$nombre_fichero[$i]);
             } else {
@@ -357,3 +376,56 @@ function envioMail($tipo,$correo,$telefono, $texto,$ficheros, $id){
 
     wp_mail( "arenasmorante@gmail.com", $tipo, $message, $headers, $attachments );
 }
+
+function recurseRmdir($dir) {
+    $files = array_diff(scandir($dir), array('.','..'));
+    foreach ($files as $file) {
+      (is_dir("$dir/$file")) ? recurseRmdir("$dir/$file") : unlink("$dir/$file");
+    }
+    return rmdir($dir);
+  }
+
+  function extension($fichero){
+    $file_ext   = explode('.',$fichero);
+    $file_ext   = strtolower(end($file_ext));
+    return $file_ext;
+  }
+
+  function montrarImagen(WP_REST_Request $request){
+    if( !current_user_can( 'manage_options' ) ) {
+        wp_die( 'You do not have sufficient permissions to access this page.' );
+      }
+    $upload_dir   = wp_upload_dir();
+    $id = sanitize_text_field($request->get_param('id'));
+    $fichero = sanitize_text_field($request->get_param('fichero'));
+    $file = $upload_dir['basedir'].'/aremox-formulario/'.$id.'/'.$fichero;
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename='.basename($file));
+    header('Content-Transfer-Encoding: binary');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($file));
+ //   ob_clean();
+    flush();
+    readfile($file);
+    exit;
+  }
+
+  function descargarImagen($id, $fichero){
+    $upload_dir   = wp_upload_dir();
+    $file = $upload_dir['basedir'].'/aremox-formulario/'.$id.'/'.$fichero;
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename='.basename($file));
+    header('Content-Transfer-Encoding: binary');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($file));
+ //   ob_clean();
+    flush();
+    readfile($file);
+    exit;
+  }

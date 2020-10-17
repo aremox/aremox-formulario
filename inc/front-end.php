@@ -14,7 +14,7 @@ class="cuestionario" enctype="multipart/form-data">
         </div>
         <div class="uk-margin">
             <label class="uk-form-label uk-align-left" >Seleccione una opción:</label>
-            <select class="uk-select uk-button-default" name="tipo" id="tipo" required">
+            <select class="uk-select uk-button-default" name="tipo" id="tipo" required>
                 <option value="Realizar_consulta">Realizar consulta</option>
                 <option value="Nueva_incidencia">Nueva incidencia</option>
                 <option value="Enviar_propuesta">Enviar propuesta</option>
@@ -27,7 +27,7 @@ class="cuestionario" enctype="multipart/form-data">
 
         <div uk-grid calss="uk-margin-remove-vertical uk-padding-remove-vertical">  
             <div id="upload" class="uk-width-3-3">
-                <div class="js-upload uk-placeholder uk-text-center uk-background-primary uk-text-secondary" id="subirFichero"  style="display:block;">
+                <div class="js-upload uk-placeholder uk-text-center uk-background-primary uk-text-secondary" id="subirFichero"  style="display:none;">
                     <span uk-icon="icon: cloud-upload"></span>
                     <span class="uk-text-middle">Arrastra aquí un fichero o</span>
                     <div uk-form-custom>
