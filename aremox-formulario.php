@@ -397,7 +397,7 @@ function moverFichero($id, $nombre_ficheros){
 
 function envioMail($tipo,$correo,$telefono, $texto,$ficheros, $id, $nombre){
     $options = get_option( 'aremox_formulario' );
-
+    $attachments = array();
     if( $options != '' ) {
         $aremox_email = $options['aremox_email'];
       
@@ -405,11 +405,14 @@ function envioMail($tipo,$correo,$telefono, $texto,$ficheros, $id, $nombre){
         $aremox_dirname = $upload_dir['basedir'].'/aremox-formulario/'.$id.'/';
         $nombre_fichero   = explode(',',$ficheros);
         for($i=0;$i<count($nombre_fichero);$i++){
-            $attachments[$i] = "$aremox_dirname$nombre_fichero[$i] ";
-            echo $attachments[$i];
+            array_push($attachments, "$aremox_dirname$nombre_fichero[$i]");
         }
-        print_r($attachments);
-        $message = "Correo: $correo <br> Telefono: $telefono <br> Mensaje: <br> $texto<br>";
+        $adjuntos = '';
+        if(sizeof($attachments) > 0 ){
+            $url = get_site_url();
+            $adjuntos = '<p><a href="'.$url.'/wp-admin/admin.php?page=aremox-formulario" > Ver adjuntos </a></p>';
+        }
+        $message = "<b>Correo:</b> $correo <br><b> Telefono:</b> $telefono <br><b> Mensaje:</b> <br> $texto<br>$adjuntos";
         $headers[]= "From: Ayuntamiento de El Bohodón <arenasmorante@gmail.com>";
 
         wp_mail( $aremox_email, $tipo, $message, $headers, $attachments );
