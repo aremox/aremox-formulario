@@ -121,6 +121,9 @@ function aremox_formulario_menu() {
   }
   add_action( 'admin_menu', 'aremox_formulario_menu' );
 
+
+
+  
   /*
  * Limiting the plugin usage to Editor or Admins.
  * Incluiding other plugin files needed to work.
@@ -129,13 +132,41 @@ function aremox_formulario_options_page() {
     if( !current_user_can( 'manage_options' ) ) {
         wp_die( 'You do not have sufficient permissions to access this page.' );
       }
-      if(isset($_POST['fichero'])){
-        descargarImagen($_POST['id'], $_POST['fichero']);
-    } 
+    
+     
       global $plugin_url;
       global $options;
       global $wpdb;
 
+      if ( isset( $_POST['aremox_email_submit'] ) ) {
+        $hidden_field = esc_html( $_POST['aremox_form_submitted'] );
+
+    
+        if ( $hidden_field == 'Y' ) {
+          $aremox_email = esc_html( $_POST['aremox_email'] );
+    
+       //   $openwebinars_badges = openwebinars_badges_get_badges( $openwebinars_email );
+    
+          /*
+           * Store form options in database
+           */
+          $options['aremox_email']    = $aremox_email;
+         // $options['openwebinars_badges']    = $openwebinars_badges;
+          $options['last_updated']          = time();
+    
+          update_option( 'aremox_formulario', $options );
+    
+        }
+      }
+
+      $options = get_option( 'aremox_formulario' );
+
+      if( $options != '' ) {
+        $aremox_email = $options['aremox_email'];
+       // $openwebinars_badges = $options['openwebinars_badges'];
+      }else{
+        $aremox_email = "";
+      }
 
       $tabla_aremox_formulario = $wpdb->prefix . 'aremox_formulario';
 
@@ -365,16 +396,22 @@ function moverFichero($id, $nombre_ficheros){
 }
 
 function envioMail($tipo,$correo,$telefono, $texto,$ficheros, $id){
-    $upload_dir   = wp_upload_dir();
-    $aremox_dirname = $upload_dir['basedir'].'/aremox-formulario/'.$id.'/';
-    $nombre_fichero   = explode(',',$ficheros);
-    for($i=0;$i<count($nombre_fichero);$i++){
-        $attachments[] = "$aremox_dirname.$nombre_fichero[$i] ";
-    }
-    $message = "Correo: $correo <br> Telefono: $telefono <br> Mensaje: <br> $texto";
-    $headers[]= "From: Ayuntamiento de El Bohodón <arenasmorante@gmail.com>";
+    $options = get_option( 'aremox_formulario' );
 
-    wp_mail( "arenasmorante@gmail.com", $tipo, $message, $headers, $attachments );
+    if( $options != '' ) {
+        $aremox_email = $options['aremox_email'];
+      
+        $upload_dir   = wp_upload_dir();
+        $aremox_dirname = $upload_dir['basedir'].'/aremox-formulario/'.$id.'/';
+        $nombre_fichero   = explode(',',$ficheros);
+        for($i=0;$i<count($nombre_fichero);$i++){
+            $attachments[] = "$aremox_dirname.$nombre_fichero[$i] ";
+        }
+        $message = "Correo: $correo <br> Telefono: $telefono <br> Mensaje: <br> $texto";
+        $headers[]= "From: Ayuntamiento de El Bohodón <arenasmorante@gmail.com>";
+
+        wp_mail( $aremox_email, $tipo, $message, $headers, $attachments );
+    }
 }
 
 function recurseRmdir($dir) {
@@ -414,6 +451,9 @@ function recurseRmdir($dir) {
   }
 
   function descargarImagen($id, $fichero){
+    if( !current_user_can( 'manage_options' ) ) {
+        wp_die( 'You do not have sufficient permissions to access this page.' );
+      }
     $upload_dir   = wp_upload_dir();
     $file = $upload_dir['basedir'].'/aremox-formulario/'.$id.'/'.$fichero;
     header('Content-Description: File Transfer');
@@ -426,6 +466,18 @@ function recurseRmdir($dir) {
     header('Content-Length: ' . filesize($file));
  //   ob_clean();
     flush();
-    readfile($file);
-    exit;
+   echo readfile($file);
+   die();
   }
+
+
+  function custom_redirects() {
+    $parts = parse_url($_SERVER['REQUEST_URI']);
+    if ($parts['path'] == '/descarga/') {
+        if (isset($_GET['id']) && isset($_GET['fichero'])) {
+    descargarImagen($_GET['id'], $_GET['fichero']);
+    die();
+    }}
+ 
+}
+add_action( 'template_redirect', 'custom_redirects' );

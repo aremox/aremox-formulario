@@ -40,23 +40,20 @@
 										$indice = $i +1;
 										$file_ext = extension($fichero);
 										$extensions = array("jpeg","jpg","png","bmp");
-										if(in_array($file_ext,$extensions) === true){
-										print('	<form action="" method="POST" enctype="multipart/form-data" style="text-align:center;padding: 100px 0;">
-    <button  type="submit" onclick="this.form.submit();" style="background:red;padding:10px;color:#fff;cursor:pointer;"><b>Download File</b></button>
-	<input type="hidden" name="download" />
-	<input type="hidden" name="id" value="'.$id.'" />
-	<input type="hidden" name="fichero" value="'.$fichero.'" />
-</form>');
-										}else{
-											echo "<li><a href='#?id=$id&fichero?$fichero' download='$fichero'>Fichero $indice</li>";
-										}
-									/*	echo "<li><a href='#TB_inline?&width=600&height=550&inlineId=modal-$indice' class='thickbox'>Fichero $indice</a></li>";
 										$url = get_site_url();
-										$img = "$url/wp-json/aremox/v1/imagen?id=$id&fichero=$fichero"; 
+										if(in_array($file_ext,$extensions) === true){
+											//echo "<li><a href='$url/descarga/?id=$id&fichero=$fichero'  target='_blank' >Fichero $indice</li>";
+											echo "<li><a href='#TB_inline?&width=600&height=550&inlineId=modal-$indice' class='thickbox'>Fichero $indice</a></li>";
+										}else{
+											echo "<li><a href='$url/descarga/?id=$id&fichero=$fichero' download='$fichero'>Fichero $indice</li>";
+										}
+										
+										$url = get_site_url();
+										$img = "$url/descarga/?id=$id&fichero=$fichero"; 
 										echo "<div id='modal-$indice' style='display:none;'>
 										<img src='$img' alt='Fichero $indice' style='width:100%; height:100%;
 										object-fit: cover;'>
-										</div>";*/
+										</div>";
 									}
 									echo "</ul></td><td>$created_at</td>
                                         </tr>";
@@ -87,9 +84,16 @@
 								); ?></span></h2>
 
 						<div class="inside">
-							<p><?php esc_attr_e(
-									'Opciones como el mail u otras cosas'
-								); ?></p>
+							<form name="aremox_email_form" action="" method="post">
+
+								<input type="hidden" name="aremox_form_submitted" value="Y">
+									
+								<label for="aremox_email">Mail de notificaciones</label>
+								<input name="aremox_email" id="aremox_email" type="text" value="<?php echo $aremox_email; ?>"/>	
+								<p>
+									<input class="button-primary" type="submit" name="aremox_email_submit" value="<?php esc_attr_e( 'Save' ); ?>" />
+								</p>		
+							</form>
 						</div>
 						<!-- .inside -->
 
