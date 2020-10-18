@@ -88,8 +88,10 @@
 
 								<input type="hidden" name="aremox_form_submitted" value="Y">
 									
-								<label for="aremox_email">Mail de notificaciones</label>
-								<input name="aremox_email" id="aremox_email" type="text" value="<?php echo $aremox_email; ?>"/>	
+								<label for="aremox_email">Mail de destinatario</label>
+								<input name="aremox_email" id="aremox_email" type="text" value="<?php echo $aremox_email; ?>"/>	<br>
+								<label for="aremox_email">Mail del sitio web</label><br>
+								<input name="aremox_email_origen" id="aremox_email_origen" type="text" value="<?php echo $aremox_email_origen; ?>"/>
 								<p>
 									<input class="button-primary" type="submit" name="aremox_email_submit" value="<?php esc_attr_e( 'Save' ); ?>" />
 								</p>		

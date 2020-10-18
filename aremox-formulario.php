@@ -151,8 +151,15 @@ function aremox_formulario_options_page() {
            * Store form options in database
            */
           $options['aremox_email']    = $aremox_email;
+         
+          if(isset($aremox_email_origen) && $aremox_email_origen != '' ) {
+                $options['aremox_email_origen']    = $aremox_email_origen;
+            }else{
+                $options['aremox_email_origen']    = $aremox_email;
+            }
+         
          // $options['openwebinars_badges']    = $openwebinars_badges;
-          $options['last_updated']          = time();
+            $options['last_updated']          = time();
     
           update_option( 'aremox_formulario', $options );
     
@@ -163,17 +170,16 @@ function aremox_formulario_options_page() {
 
       if( $options != '' ) {
         $aremox_email = $options['aremox_email'];
+        $aremox_email_origen = $options['aremox_email_origen'];
        // $openwebinars_badges = $options['openwebinars_badges'];
       }else{
         $aremox_email = "";
+        $aremox_email_origen = "";
       }
 
+      //Datos de los formularios enviados
       $tabla_aremox_formulario = $wpdb->prefix . 'aremox_formulario';
-
-
-    
-    
-    $aremox_formulario = $wpdb->get_results("SELECT * FROM $tabla_aremox_formulario ORDER BY created_at DESC");
+      $aremox_formulario = $wpdb->get_results("SELECT * FROM $tabla_aremox_formulario ORDER BY created_at DESC");
 
       require( 'inc/options-page-wrapper.php' );
     
@@ -400,6 +406,7 @@ function envioMail($tipo,$correo,$telefono, $texto,$ficheros, $id, $nombre){
     $attachments = array();
     if( $options != '' ) {
         $aremox_email = $options['aremox_email'];
+        $aremox_email_origen = $options['aremox_email_origen'];
       
         $upload_dir   = wp_upload_dir();
         $aremox_dirname = $upload_dir['basedir'].'/aremox-formulario/'.$id.'/';
@@ -413,7 +420,7 @@ function envioMail($tipo,$correo,$telefono, $texto,$ficheros, $id, $nombre){
             $adjuntos = '<p><a href="'.$url.'/wp-admin/admin.php?page=aremox-formulario" > Ver adjuntos </a></p>';
         }
         $message = "<b>Correo:</b> $correo <br><b> Telefono:</b> $telefono <br><b> Mensaje:</b> <br> $texto<br>$adjuntos";
-        $headers[]= "From: Ayuntamiento de El Bohodón <arenasmorante@gmail.com>";
+        $headers[]= "From: Ayuntamiento de El Bohodón <$aremox_email_origen>";
 
         wp_mail( $aremox_email, $tipo, $message, $headers, $attachments );
     }
