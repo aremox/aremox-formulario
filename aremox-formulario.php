@@ -144,13 +144,16 @@ function aremox_formulario_options_page() {
     
         if ( $hidden_field == 'Y' ) {
           $aremox_email = esc_html( $_POST['aremox_email'] );
-    
+          $aremox_capcha = $_POST['aremox_capcha'];
+
        //   $openwebinars_badges = openwebinars_badges_get_badges( $openwebinars_email );
     
           /*
            * Store form options in database
            */
           $options['aremox_email']    = $aremox_email;
+          $options['aremox_capcha']    = $aremox_capcha;
+
          
           if(isset($aremox_email_origen) && $aremox_email_origen != '' ) {
                 $options['aremox_email_origen']    = $aremox_email_origen;
@@ -171,6 +174,8 @@ function aremox_formulario_options_page() {
       if( $options != '' ) {
         $aremox_email = $options['aremox_email'];
         $aremox_email_origen = $options['aremox_email_origen'];
+        $aremox_capcha = $options['aremox_capcha'];
+
        // $openwebinars_badges = $options['openwebinars_badges'];
       }else{
         $aremox_email = "";
@@ -254,14 +259,16 @@ function aremox_formulario_shortcode() {
   add_shortcode('aremox_formulario', 'aremox_formulario_shortcode');
 
 function aremox_script_styles(){
-
+    $options = get_option( 'aremox_formulario' );
+    $aremox_capcha = $options['aremox_capcha'];
 
     wp_register_script('script_respuesta', plugins_url('aremox-formulario.js', __FILE__), array('jquery'),1, true);
  //   wp_register_script('script_dropzone', plugins_url('min/aremox-formulario.min.js', __FILE__), array('jquery'),1, true);
    
     wp_enqueue_script('script_respuesta');
    // wp_enqueue_script('script_dropzone');
-
+   wp_register_script('script_capcha', 'https://www.google.com/recaptcha/api.js?render='. $aremox_capcha, array('jquery'),1, true);     
+   wp_enqueue_script('script_capcha');
 }
 
 add_action('wp_enqueue_scripts', 'aremox_script_styles');

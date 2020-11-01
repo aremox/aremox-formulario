@@ -92,6 +92,8 @@
 								<input name="aremox_email" id="aremox_email" type="text" value="<?php echo $aremox_email; ?>"/>	<br>
 								<label for="aremox_email">Mail del sitio web</label><br>
 								<input name="aremox_email_origen" id="aremox_email_origen" type="text" value="<?php echo $aremox_email_origen; ?>"/>
+								<label for="aremox_capcha">Clave de sitio web (Google)</label><br>
+								<input name="aremox_capcha" id="aremox_capcha" type="text" value="<?php echo $aremox_capcha; ?>"/>
 								<p>
 									<input class="button-primary" type="submit" name="aremox_email_submit" value="<?php esc_attr_e( 'Save' ); ?>" />
 								</p>		

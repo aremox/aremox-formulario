@@ -8,6 +8,9 @@ jQuery( "#tipo" ).change(function() {
         document.getElementById('subirFichero').style.display='none';
     }
 });
+function onSubmit(token) {
+    document.getElementById("capcha-form").submit();
+  }
 
 
 function getFile(event) {

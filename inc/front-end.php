@@ -53,7 +53,7 @@ class="cuestionario" enctype="multipart/form-data">
 value="1" required> Entiendo y acepto las condiciones
         </div>
         <div cclass="uk-margin" uk-margin>
-            <input class="uk-button uk-button-default" type="submit" value="Enviar">
+            <input class="uk-button uk-button-default g-recaptcha" data-sitekey="reCAPTCHA_site_key" data-callback='onSubmit' data-action='submit' type="submit" value="Enviar">
         </div>
         </fieldset>
     </form>'
