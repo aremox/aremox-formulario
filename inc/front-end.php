@@ -14,7 +14,7 @@ class="cuestionario" enctype="multipart/form-data">
         </div>
         <div class="uk-margin">
             <label class="uk-form-label uk-align-left" >Seleccione una opción:</label>
-            <select class="uk-select uk-button-default" name="tipo" id="tipo" required">
+            <select class="uk-select uk-button-default" name="tipo" id="tipo" required>
                 <option value="Realizar_consulta">Realizar consulta</option>
                 <option value="Nueva_incidencia">Nueva incidencia</option>
                 <option value="Enviar_propuesta">Enviar propuesta</option>
@@ -23,21 +23,27 @@ class="cuestionario" enctype="multipart/form-data">
         </div>
         <div class="uk-margin">
             <textarea class="uk-textarea uk-button-default" id="texto" minlength="9" name="texto" rows="5" cols="50" placeholder="Escriba aquí su comentario o mensaje ..."></textarea>
-        </div>    
+        </div>  
 
-        <div class="js-upload uk-placeholder uk-text-center uk-background-primary uk-text-secondary" id="subirFichero"  style="display:block;">
-            <span uk-icon="icon: cloud-upload"></span>
-            <span class="uk-text-middle">Arrastra aquí un fichero o</span>
-            <div uk-form-custom>
-                <input type="file" id="fichero" name="file" multiple>
-                <span class="uk-link">selecciona uno</span>
+        <div uk-grid calss="uk-margin-remove-vertical uk-padding-remove-vertical">  
+            <div id="upload" class="uk-width-3-3">
+                <div class="js-upload uk-placeholder uk-text-center uk-background-primary uk-text-secondary" id="subirFichero"  style="display:none;">
+                    <span uk-icon="icon: cloud-upload"></span>
+                    <span class="uk-text-middle">Arrastra aquí un fichero o</span>
+                    <div uk-form-custom>
+                        <input type="file" id="fichero" name="file" multiple>
+                        <span class="uk-link">selecciona uno</span>
+                    </div>
+                </div>
+            
+            </div>
+
+            <div class="uk-width-1-3 " id="lista_ficheros" uk-grid>
             </div>
         </div>
-
         <progress id="js-progressbar" class="uk-progress" value="0" max="100" hidden></progress>
-        
-        <ul class="uk-list" id="lista_ficheros">
-        </ul>
+
+        <input id="ficheros" name="ficheros" type="hidden" value="[]">
 
         <div class="uk-margin">
             <label for="aceptacion">La información facilitada se tratará 
@@ -47,7 +53,7 @@ class="cuestionario" enctype="multipart/form-data">
 value="1" required> Entiendo y acepto las condiciones
         </div>
         <div cclass="uk-margin" uk-margin>
-            <input class="uk-button uk-button-default" type="submit" value="Enviar">
+            <input class="uk-button uk-button-default g-recaptcha" data-sitekey="reCAPTCHA_site_key" data-callback='onSubmit' data-action='submit' type="submit" value="Enviar">
         </div>
         </fieldset>
     </form>'
